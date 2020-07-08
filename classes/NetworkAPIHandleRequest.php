@@ -10,6 +10,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		switch($request){
 			case 'test':
 				$data = array('response'=>"Network test Yeah baby");
+				print_r($_SERVER);
 				break;
 				
 			case 'status':
@@ -26,7 +27,11 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 			case 'services':
 				$services = NetworkService::createCollection(null, null, 'service_name');
 				$services = NetworkService::collection2rows($services);
-				foreach($services as $service)$data[$service['service_name']] = $service;
+				$lanIP = Network::getLANIP();
+				foreach($services as $service){
+					$service['lan_ip'] = $lanIP;
+					$data[$service['service_name']] = $service;
+				}
 				break;
 				
 			case 'router-status':
