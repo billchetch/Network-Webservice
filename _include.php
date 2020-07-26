@@ -11,6 +11,8 @@ spl_autoload_register(function ($class) {
 	
 	foreach($paths as $path){
 		$classdir = realpath(dirname(__FILE__).'/'.$path);
+		if(!is_dir($classdir))continue;
+
 		$fn = $classdir.'/'.$class.'.php';
 		if(file_exists($fn)){
 			include $fn;

@@ -15,3 +15,4 @@ class NetworkService extends \chetch\db\DBObject{
 		
 	}
 }
+?>

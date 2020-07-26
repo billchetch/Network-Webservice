@@ -40,3 +40,4 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		return $data;
 	}
 }
+?>
