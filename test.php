@@ -8,6 +8,9 @@ use chetch\Utils as Utils;
 try{
 	$lf = "\n";
 	
+	$s = "test";
+	echo $s[2].$lf;
+
 	echo Network::getDefaultGatewayIP();
 	
 } catch (Exception $e){
