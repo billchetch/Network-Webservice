@@ -32,7 +32,6 @@ spl_autoload_register(function ($class) {
 
 require('_config.php');
 
-
 use chetch\Config as Config;
 if(Config::get('ERROR_REPORTING')){
 	error_reporting(Config::get('ERROR_REPORTING'));
@@ -53,7 +52,7 @@ try{
 	
 
 } catch (Exception $e){
-	echo "exception: ".$e->getMessage();
+	echo "Exception: ".$e->getMessage();
 	die;
 }
 ?>
