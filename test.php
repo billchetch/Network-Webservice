@@ -8,7 +8,9 @@ use chetch\Utils as Utils;
 try{
 	$lf = "\n";
 	
-	echo Network::getDefaultGatewayIP();
+	$services = NetworkService::createCollection(null, null, 'service_name');
+	$services = NetworkService::collection2rows($services);
+	print_r($services);
 	
 } catch (Exception $e){
 	echo "EXCEPTION: ".$e->getMessage();
