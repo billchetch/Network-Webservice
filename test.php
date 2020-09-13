@@ -8,11 +8,10 @@ use chetch\Utils as Utils;
 try{
 	$lf = "\n";
 	
-	$s = "test";
-	echo $s[2].$lf;
+	echo "Default gateway: ".Network::getDefaultGatewayIP().$lf;
+	//print_r(gethostbynamel(trim(exec("hostname"))));
+	print_r($_SERVER);
 
-	echo Network::getDefaultGatewayIP();
-	
 } catch (Exception $e){
 	echo "EXCEPTION: ".$e->getMessage();
 }
