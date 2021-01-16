@@ -44,7 +44,47 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				
 			case 'router-status':
 				break;
+
+			case 'tokens':
+				if(!isset($params['service_id']))throw new Exception("No service id passed in query");
+				
+				$tokens = NetworkServiceToken::createCollection($params);
+				$data = NetworkServiceToken::collection2rows($tokens);
+				break;
+
+			case 'token':
+				if(!isset($params['service_id']))throw new Exception("No service id passed in query");
+				if(!isset($params['client_name']))throw new Exception("No client name passed in query");
+				
+				$token = NetworkServiceToken::createInstance($params);
+				$data = $token->getRowData();
+				break;
 		}
+		return $data;
+	}
+
+	protected function processPutRequest($request, $params, $payload){
+		
+		$data = array();
+		$requestParts = explode('/', $request);
+		
+		switch($requestParts[0]){
+			case 'token':
+				if(empty($payload['service_id']))throw new Exception("Cannot save token as no service ID provided");
+				if(empty($payload['client_name']))throw new Exception("Cannot save token as no client name provided");
+				
+				unset($payload['created']);
+				unset($payload['id']);
+
+				$token = NetworkServiceToken::createInstance($payload);
+				$token->write(true);
+				$data = $token->getRowData();
+				break;
+
+			default:
+				throw new Exception("Unrecognised api request $request");
+		}
+
 		return $data;
 	}
 }
