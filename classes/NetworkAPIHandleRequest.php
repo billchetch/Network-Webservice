@@ -13,7 +13,9 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		}
 	}
 
+	
 	protected function processGetRequest($request, $params){
+		
 		$data = array();
 		switch($request){
 			case 'test':
@@ -40,6 +42,13 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 					$service['lan_ip'] = $lanIP;
 					$data[$service['service_name']] = $service;
 				}
+				break;
+
+			case 'service':
+				if(!isset($params['service_name']))throw new Exception("No service name passed in query");
+				
+				$service = NetworkService::createInstance($params);
+				$data = $service->getRowData();
 				break;
 				
 			case 'router-status':
@@ -69,6 +78,20 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		$requestParts = explode('/', $request);
 		
 		switch($requestParts[0]){
+			case 'service':
+				if(empty($payload['service_name']))throw new Exception("Cannot save service as no name is provided");
+				if(empty($payload['endpoint_port']))throw new Exception("Cannot save service as no port is provided");
+				if(empty($payload['protocols']))throw new Exception("Cannot save service as no protocol is provided");
+
+				if(empty($payload['domain'])){
+					$payload['domain'] = $_SERVER['REMOTE_ADDR'];
+				}
+
+				$service = NetworkService::createInstance($payload);
+				$service->write(true);
+				$data = $service->getRowData();
+				break;
+
 			case 'token':
 				if(empty($payload['service_id']))throw new Exception("Cannot save token as no service ID provided");
 				if(empty($payload['client_name']))throw new Exception("Cannot save token as no client name provided");
