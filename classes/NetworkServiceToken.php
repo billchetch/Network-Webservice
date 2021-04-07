@@ -21,6 +21,10 @@ class NetworkServiceToken extends \chetch\db\DBObject{
 
 	public function write($readAgain = false){
 		$this->remove('created');
+		if(!empty($this->id)){
+			$this->set("updated", self::now(false));
+		}
+
 		return parent::write($readAgain);
 	}
 }

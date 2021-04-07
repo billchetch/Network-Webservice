@@ -9,7 +9,7 @@ try{
 	$qsParams = array();
 	parse_str($queryString, $qsParams);
 	$requestMethod = strtoupper($_SERVER['REQUEST_METHOD']);
-	
+
 	switch($ar[0]){ 
 		case 'api': //API access
 			try{
@@ -40,12 +40,12 @@ try{
 			break;
 			
 		default:
-			throw new Exception($ar[0]." is an unrecognised service");
+			throw new Exception($ar[0]." is an unrecognised stub");
 			break;
 	}
 
 } catch (Exception $e){
-	$log = Logger::getLog();
+	$log = chetch\sys\Logger::getLog();
 	$log->exception($e->getMessage());
 	
 	header('HTTP/1.0 404 Not Found', true, 404);
