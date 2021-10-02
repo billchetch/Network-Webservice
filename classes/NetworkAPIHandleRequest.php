@@ -92,6 +92,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				if(empty($payload['domain'])){
 					$payload['domain'] = $_SERVER['REMOTE_ADDR'];
 				}
+				$payload['updated'] = self::now(false);
 
 				$service = NetworkService::createInstance($payload);
 				$s = NetworkService::getServiceyByNetworkParams($payload['domain'], $payload['endpoint_port']);
