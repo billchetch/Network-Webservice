@@ -10,10 +10,16 @@ class NetworkService extends \chetch\db\DBObject{
 		self::setConfig('SELECT_ROW_FILTER', "service_name=':service_name'");
 	}
 	
+	public static function getServiceyByNetworkParams($domain, $port){
+		$filter = "domain=':domain' AND endpoint_port=:endpoint_port";
+		$params['domain'] = $domain;
+		$params['endpoint_port'] = $port;
+		$collection = self::createCollection($params, $filter);
+		return count($collection) > 0 ? $collection[0] : null;
+	}
+
 	public function __construct($rowdata){
 		parent::__construct($rowdata);
-		
-		
-	}
+	}	
 }
 ?>

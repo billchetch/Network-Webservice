@@ -20,7 +20,13 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		switch($request){
 			case 'test':
 				$data = array('response'=>"Network test Yeah baby");
-				print_r($_SERVER);
+				$payload['service_name'] = 'oblong3';
+			        $payload['domain'] = "192.168.2.101";
+				$payload['endpoint_port'] = 8088;
+				$service = NetworkService::createInstance($payload);
+				var_dump($payload);
+				
+				var_dump($s);
 				break;
 				
 			case 'status':
@@ -88,6 +94,11 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				}
 
 				$service = NetworkService::createInstance($payload);
+				$s = NetworkService::getServiceyByNetworkParams($payload['domain'], $payload['endpoint_port']);
+				if($s != null && $s->id != $service->id){
+					throw new Exception("Cannot save service ".$payload['service_name']." as the service ".$s->get('service_name')." is already using ".$payload['domain'].":".$payload['endpoint_port']);
+				}			
+
 				$service->write(true);
 				$data = $service->getRowData();
 				break;
