@@ -25,9 +25,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 			        $payload['domain'] = "192.168.2.101";
 				$payload['endpoint_port'] = 8088;
 				$service = NetworkService::createInstance($payload);
-				var_dump($payload);
-				
-				var_dump($s);
+				var_dump($service);
 				break;
 				
 			case 'status':
