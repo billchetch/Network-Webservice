@@ -9,12 +9,13 @@ use chetch\api\APIMakeRequest as APIMakeRequest;
 try{
 	$lf = "\n";
 	
-	$payload = array();
+	$s = "{\"service_name\": \"crayfish9\",\"endpoint_port\":8091,\"protocols\":\"tcp\"}";
+	$payload = json_decode($s, true); //array();
 	//$payload["token"] = "AAAZZZa";
-	$payload["service_name"] = "oblong4";
+	/*$payload["service_name"] = "oblong4";
 	$payload['domain'] = "192.168.2.102";
 	$payload["endpoint_port"] = 8089;
-	$payload["protocols"] = "tcp";
+	$payload["protocols"] = "tcp";*/
  
 	
 	//$req = APIMakeRequest::createDeleteRequest("http://127.0.0.1:8005/api", "entry/1");

@@ -19,6 +19,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		$data = array();
 		switch($request){
 			case 'test':
+				throw new Exception("Hey");
 				$data = array('response'=>"Network test Yeah baby");
 				$payload['service_name'] = 'oblong3';
 			        $payload['domain'] = "192.168.2.101";
@@ -85,6 +86,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 		
 		switch($requestParts[0]){
 			case 'service':
+				if(empty($payload))throw new Exception("No payload supplied");
 				if(empty($payload['service_name']))throw new Exception("Cannot save service as no name is provided");
 				if(empty($payload['endpoint_port']))throw new Exception("Cannot save service as no port is provided");
 				if(empty($payload['protocols']))throw new Exception("Cannot save service as no protocol is provided");

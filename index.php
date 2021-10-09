@@ -17,10 +17,14 @@ try{
 				$apiCall = implode('/',$ar);
 				if(stripos($apiCall, '/') === 0)$apiCall = substr($apiCall, 1);
 				$payload = file_get_contents('php://input'); //this is expected to be JSON
+				throw new Exception($payload);
 				$handler = NetworkAPIHandleRequest::createHandler($apiCall, $requestMethod, $qsParams, $payload);
 				$handler->handle();
 			} catch (Exception $e){
 				NetworkAPIHandleRequest::exception($e);
+				$log = chetch\sys\Logger::getLog();
+				$log->exception($e->getMessage());
+	
 				die;
 			}
 			die;
@@ -45,6 +49,7 @@ try{
 	}
 
 } catch (Exception $e){
+	
 	$log = chetch\sys\Logger::getLog();
 	$log->exception($e->getMessage());
 	
