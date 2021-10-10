@@ -16,7 +16,9 @@ try{
 	$payload['domain'] = "192.168.2.102";
 	$payload["endpoint_port"] = 8089;
 	$payload["protocols"] = "tcp";*/
- 
+	$inst = NetworkService::createInstance($payload);
+	var_dump($inst); 
+	die;
 	
 	//$req = APIMakeRequest::createDeleteRequest("http://127.0.0.1:8005/api", "entry/1");
 	//$req = APIMakeRequest::createGetRequest("http://127.0.0.1:8005/api", "entries");

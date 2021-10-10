@@ -99,7 +99,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				if($s != null && $s->id != $service->id){
 					throw new Exception("Cannot save service ".$payload['service_name']." as the service ".$s->get('service_name')." is already using ".$payload['domain'].":".$payload['endpoint_port']);
 				}			
-
+				
 				$service->write(true);
 				$data = $service->getRowData();
 				break;

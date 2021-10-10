@@ -7,7 +7,7 @@ class NetworkService extends \chetch\db\DBObject{
 		self::setConfig('TABLE_NAME', $t);
 		self::setConfig('SELECT_SQL', "SELECT * FROM $t");
 
-		self::setConfig('SELECT_ROW_FILTER', "service_name=':service_name'");
+		self::setConfig('SELECT_ROW_FILTER', "service_name=:service_name");
 	}
 	
 	public static function getServiceyByNetworkParams($domain, $port){
