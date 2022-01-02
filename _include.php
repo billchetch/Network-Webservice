@@ -49,7 +49,6 @@ try{
 	DB::setUTC();
 
 	Logger::setLog(basename($_SERVER['PHP_SELF'], ".php"), Logger::LOG_TO_DATABASE);
-	
 
 } catch (Exception $e){
 	echo "Exception: ".$e->getMessage();
