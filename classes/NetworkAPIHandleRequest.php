@@ -5,15 +5,6 @@ use chetch\network\Network as Network;
 
 class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 	
-	private function getLANIP(){
-		if(isset($_SERVER) && isset($_SERVER['SERVER_ADDR'])){
-			return $_SERVER['SERVER_ADDR'];
-		} else {
-			return Network::getLANIP();
-		}
-	}
-
-	
 	protected function processGetRequest($request, $params){
 		
 		$data = array();
@@ -22,27 +13,27 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				throw new Exception("Hey");
 				$data = array('response'=>"Network test Yeah baby");
 				$payload['service_name'] = 'oblong3';
-			        $payload['domain'] = "192.168.2.101";
+			    $payload['domain'] = "192.168.2.101";
 				$payload['endpoint_port'] = 8088;
 				$service = NetworkService::createInstance($payload);
 				var_dump($service);
 				break;
 				
 			case 'status':
-				$data['lan_ip'] = $this->getLANIP();
+				$data['lan_ip'] = Network::getLANIP();
 				$data['wan_ip'] = Network::getWANIP();
 				$data['internet'] = Network::hasInternet();
 				$data['default_gateway'] = Network::getDefaultGatewayIP();
 				break;
 
 			case 'status-lan':
-				$data['lan_ip'] = $this->getLANIP();
+				$data['lan_ip'] = Network::getLANIP();
 				break;
 
 			case 'services':
 				$services = NetworkService::createCollection(null, null, 'service_name');
 				$services = NetworkService::collection2rows($services);
-				$lanIP = $this->getLANIP();
+				$lanIP = Network::getLANIP();
 				foreach($services as $service){
 					$service['lan_ip'] = $lanIP;
 					$data[$service['service_name']] = $service;
