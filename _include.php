@@ -11,9 +11,13 @@ spl_autoload_register(function ($class) {
 	
 	foreach($paths as $path){
 		$classdir = realpath(dirname(__FILE__).'/'.$path);
-		if(!is_dir($classdir))continue;
+		if(!is_dir($classdir)){
+			//echo dirname(__FILE__).'/'.$path.' '."$classdir is not a directory\n";
+			continue;
+		}
 
 		$fn = $classdir.'/'.$class.'.php';
+		//echo "Trying $fn \n";
 		if(file_exists($fn)){
 			include $fn;
 			return;

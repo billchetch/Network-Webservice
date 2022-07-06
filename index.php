@@ -1,4 +1,7 @@
 <?php
+//phpinfo();
+//die;
+
 require_once('_include.php');
 
 try{

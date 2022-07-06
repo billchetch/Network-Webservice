@@ -5,15 +5,24 @@ use chetch\network\Network as Network;
 
 class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 	
+	protected function addResourePaths(&$resourcePaths, $resourcePathBase, $resourceType, $resourceDirectory, $resourceID){
+		switch($resourceDirectory){
+			case 'apks':
+				array_push($resourcePaths, $resourcePathBase.'media-controller-debug');
+				array_push($resourcePaths, $resourcePathBase.'captains-log-debug');
+				break;
+		}
+	}
+
 	protected function processGetRequest($request, $params){
 		
 		$data = array();
-		switch($request){
+		$requestParts = explode('/', $request);
+		switch($requestParts[0]){
 			case 'test':
-				throw new Exception("Hey");
 				$data = array('response'=>"Network test Yeah baby");
 				$payload['service_name'] = 'oblong3';
-			    $payload['domain'] = "192.168.2.101";
+			      $payload['domain'] = "192.168.2.101";
 				$payload['endpoint_port'] = 8088;
 				$service = NetworkService::createInstance($payload);
 				var_dump($service);
@@ -63,6 +72,26 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				
 				$token = NetworkServiceToken::createInstance($params);
 				$data = $token->getRowData();
+				break;
+
+			case 'resources':
+				if(count($requestParts) == 2 && $requestParts[1] == 'apks'){
+					$path = getcwd().'/resources/apks';
+					$files = array_diff(scandir($path), array('.', '..'));
+					foreach($files as $f){
+						$href = '../resource/apk/apks/'.$f;
+						echo '<a href="'.$href.'">'.$f.'</a><br/>';
+					}
+					die;
+				}
+				break;
+
+			case 'resource':
+				$this->processGetResourceRequest($request, $params);
+				break;
+
+			default:
+				throw new Exception("Unrecognised request $request");
 				break;
 		}
 		return $data;
