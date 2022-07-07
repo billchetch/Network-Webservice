@@ -79,8 +79,9 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 					$path = getcwd().'/resources/apks';
 					$files = array_diff(scandir($path), array('.', '..'));
 					foreach($files as $f){
-						$href = '../resource/apk/apks/'.$f;
-						echo '<a href="'.$href.'">'.$f.'</a><br/>';
+						$href = '../resource/apk/apks/'.$f.'?time='.time();
+						$filesize = chetch\Utils::humanFilesize(filesize($path.'/'.$f));
+						echo '<a href="'.$href.'">'."$f ($filesize)</a><br/>";
 					}
 					die;
 				}
