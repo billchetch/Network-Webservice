@@ -5,15 +5,6 @@ use chetch\network\Network as Network;
 
 class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 	
-	protected function addResourePaths(&$resourcePaths, $resourcePathBase, $resourceType, $resourceDirectory, $resourceID){
-		switch($resourceDirectory){
-			case 'apks':
-				array_push($resourcePaths, $resourcePathBase.'media-controller-debug');
-				array_push($resourcePaths, $resourcePathBase.'captains-log-debug');
-				break;
-		}
-	}
-
 	protected function processGetRequest($request, $params){
 		
 		$data = array();
@@ -79,9 +70,10 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 					$path = getcwd().'/resources/apks';
 					$files = array_diff(scandir($path), array('.', '..'));
 					foreach($files as $f){
-						$href = '../resource/apk/apks/'.$f.'?time='.time();
+						$resource = pathinfo($f, PATHINFO_FILENAME);
+						$href = '../resource/apk/apks/'.$resource.'?time='.time();
 						$filesize = chetch\Utils::humanFilesize(filesize($path.'/'.$f));
-						echo '<a href="'.$href.'">'."$f ($filesize)</a><br/>";
+						echo '<a href="'.$href.'">'."$resource ($filesize)</a><br/>";
 					}
 					die;
 				}
