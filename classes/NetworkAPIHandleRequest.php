@@ -5,6 +5,21 @@ use chetch\network\Network as Network;
 
 class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 	
+
+	function getResourceDirectoryListing($type, $folder){
+		$path = getcwd().'/resources/'.$folder;
+		$files = array_diff(scandir($path), array('.', '..'));
+		$html = '';
+		foreach($files as $f){
+			$resource = pathinfo($f, PATHINFO_FILENAME);
+			$href = "../resource/$type/$folder/".$resource.'?time='.time();
+			$filesize = chetch\Utils::humanFilesize(filesize($path.'/'.$f));
+			$html.= '<a href="'.$href.'">'."$resource ($filesize)</a><br/>";
+		}
+		return $html; 
+	}
+
+
 	protected function processGetRequest($request, $params){
 		
 		$data = array();
@@ -66,16 +81,21 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				break;
 
 			case 'resources':
-				if(count($requestParts) == 2 && $requestParts[1] == 'apks'){
-					$path = getcwd().'/resources/apks';
-					$files = array_diff(scandir($path), array('.', '..'));
-					foreach($files as $f){
-						$resource = pathinfo($f, PATHINFO_FILENAME);
-						$href = '../resource/apk/apks/'.$resource.'?time='.time();
-						$filesize = chetch\Utils::humanFilesize(filesize($path.'/'.$f));
-						echo '<a href="'.$href.'">'."$resource ($filesize)</a><br/>";
+				if(count($requestParts) == 2){
+					$dir = $requestParts[1];
+					switch(strtolower($dir)){
+						case 'apks':
+							echo $this->getResourceDirectoryListing('apk', $dir);
+							die;
+
+						case 'pdfs':
+							echo $this->getResourceDirectoryListing('pdf', $dir);
+							die;
+
+						default:
+							throw new Exception("$dir is not a recognised resource directory");
+							break;
 					}
-					die;
 				}
 				break;
 
