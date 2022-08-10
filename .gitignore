@@ -17,5 +17,5 @@ htdocs/html/*
 oauth.json
 *.sql
 resources/apks/*
-resource/pdfs/*
+resources/pdfs/*
 !readme
