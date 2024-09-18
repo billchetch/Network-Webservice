@@ -10,15 +10,13 @@ use chetch\api\APIMakeRequest as APIMakeRequest;
 try{
 	$lf = "\n";
 	$local = false;	
+	$openBBRPITunnel = true;
 
 	if($local){
 		$si = SysInfo::createInstance();
 
-		$data = $si->getData('network-data');
-		if(!$data){
-			$tunnels = array('bbrpi'=>false);
-			$data = array('ssh-tunnels'=>$tunnels);
-		}
+		$tunnels = array('bbrpi'=>$openBBRPITunnel);
+		$data = array('ssh-tunnels'=>$tunnels);
 		$si->setData('network-data', $data);
 	} else {
 		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://sf.bulan-baru.com:8001/api/");
