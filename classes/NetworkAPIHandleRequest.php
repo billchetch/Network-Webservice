@@ -2,6 +2,7 @@
 
 use chetch\api\APIException as APIException;
 use chetch\network\Network as Network;
+use chetch\sys\SysInfo as SysInfo;
 
 class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 	
@@ -63,6 +64,14 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				break;
 				
 			case 'router-status':
+				break;
+
+			case 'network-data':
+				$si = SysInfo::createInstance();
+				$data = $si->getData('network-data');
+				if(!$data){
+					throw new Exception("No network data available");
+				}
 				break;
 
 			case 'tokens':
