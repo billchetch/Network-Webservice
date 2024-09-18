@@ -23,7 +23,7 @@ Config::set('SMTP_PORT', _SMTP_PORT_);*/
 
 //API Config
 Config::set('API_ALLOW_REQUESTS', 'GET,PUT,POST,DELETE');
-Config::set('REMOTE_API_BASE_URL', '127.0.0.1:8001/api'); //currently for testing purposes (19/09/24)
+//Config::set('REMOTE_API_BASE_URL', '127.0.0.1:8001/api'); //currently for testing purposes (19/09/24)
 
 //establish table names
 
