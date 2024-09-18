@@ -19,3 +19,6 @@ oauth.json
 resources/apks/*
 resources/pdfs/*
 !readme
+resources/apks/media-controller-debug.apk
+/.vs
+resources/apks/media-controller-debug.apk
