@@ -6,10 +6,11 @@ Config::initialise();
 Config::set('ERROR_REPORTING', E_ALL);
 
 //Database Config
-Config::set('DBHOST', 'mysql:host=127.0.0.1');
+include('/var/www/conf/dbconfig.php');
+Config::set('DBHOST', 'mysql:host='._DB_HOST_);
 Config::set('DBNAME', 'network');
-Config::set('DBUSERNAME', 'rogon');
-Config::set('DBPASSWORD', 'frank1yn');
+Config::set('DBUSERNAME', _DB_USERNAME_);
+Config::set('DBPASSWORD', _DB_PASSWORD_);
 $dbtblpfx = ''; //table prefix for database
 
 //Email Config
@@ -23,7 +24,7 @@ Config::set('SMTP_PORT', _SMTP_PORT_);*/
 
 //API Config
 Config::set('API_ALLOW_REQUESTS', 'GET,PUT,POST,DELETE');
-//Config::set('REMOTE_API_BASE_URL', '127.0.0.1:8001/api'); //currently for testing purposes (19/09/24)
+
 
 //establish table names
 
