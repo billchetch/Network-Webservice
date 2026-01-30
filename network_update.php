@@ -1,4 +1,11 @@
 <?php
+/**
+ * Script to be run regularly by a cron job.  Performing various network related funcitons
+ * 
+ * 1. Opening and closing SSH tunnels to allow connection from a client via a proxy to the machine that is running this <script class=""></script>
+ * The concept here
+ */
+
 require_once('_include.php');
 
 use chetch\Config as Config;
@@ -33,10 +40,11 @@ function isProcessRunning($searchFor){
 	return $pid;
 }
 
+/**
+ * IMPORTANT!: Read the intro to this script above !^!
+ */
 $log = null;
 try{
-
-	
 	$lf = "\n";
 	$local = false;	
 	$tunnelEndpoint = Config::get('SSH_TUNNEL_ENDPOINT', 'bills-macbook');
