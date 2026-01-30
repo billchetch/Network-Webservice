@@ -84,8 +84,9 @@ try{
 					if($pid > 0){
 						$log->info("Process $pid already running so ignoring connect request!");
 					} else {
-						$log->info("Opening tunnel with $sshOpen");
-						exec($sshOpen.' >/dev/null 2>&1  &'); //run in background
+						$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
+						$log->info("Opening tunnel with $openAndRunInBackground");
+						exec($openAndRunInBackground); //run in background
 						$log->info("Process started!");
 					}
 				} else {
