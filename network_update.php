@@ -62,7 +62,7 @@ try{
 		$si->setData('network-data', $data);
 		$log->info("Successfully updated!");
 	} else {
-		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://newtork.bulan-baru.com:8001/api/");
+		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
 		$log->info("Requesting network-data from remote SysInfo @ $apiBaseURL...");
 		$req = APIMakeRequest::createGetRequest($apiBaseURL, 'network-data');
 		$data = $req->request();
