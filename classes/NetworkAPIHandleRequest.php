@@ -166,11 +166,11 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				if(!isset($payload['request_open']))throw new Exception("Cannot update remote host as no request_open provided");
 				
 				unset($payload['id']);
-				/*if($payload['request_open']){
-					$payload['opened_on'] = now();
+				if($payload['request_open']){
+					$payload['opened_on'] = self::now(false);
 				} else {
-					$payload['closed_on'] = now();
-				}*/
+					$payload['closed_on'] = self::now(false);
+				}
 				break;
 
 			default:
