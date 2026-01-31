@@ -62,6 +62,7 @@ function getPID($searchFor){
  */
 $log = null;
 $doExec = false; //for debuggging ... set to true to actually execute system commands!
+$updateServer = true; //flag for updating server or not
 try{
 	$lf = "\n";
 	$log = Logger::getLog('network update', Logger::LOG_TO_SCREEN);
@@ -93,25 +94,24 @@ try{
 		$payload = array();
 		$payload['remote_host_name'] = $remoteHostName;
 		$payload['lan_ip'] = Network::getLANIP();
-		$checkedOnly = true;
-		$pid = getPID($sshOpen);
+		$payload['comments'] = "Running script with doExec = ".($doExec ? 'false' : 'true');
+		$pid = 10; //getPID($sshOpen);
 
 		if($requestOpen){
 			$log->info("Remote host request to open reverse tunnel!");
 			if($pid > 0){
 				$log->info("Process $pid already running so ignoring request to open!");
+				$payload['comments'] = "Process $pid already running so ignoring request to open!";
 			} else {
 				$sshOpen = str_replace('{SERVER_PORT}', $serverPort, $sshOpen);
 				$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
 				$log->info("Open tunnel using: $openAndRunInBackground");
 				if($doExec)exec($openAndRunInBackground);
-				$pid = getPID($sshOpen);
+				$pid = 10; //getPID($sshOpen);
 				if($pid > 0){
 					$log->info("Process $pid started! So updating server @ $apiBaseURL");
 					$payload['request_open'] = $requestOpen;
-					$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
-					$req->request();
-					$checkedOnly = false;
+					$payload['comments'] = "Process $pid started!";
 				} else {
 					throw new Exception("Process failed to start as no PID can be found using $sshOpen as search string");
 				}
@@ -123,58 +123,27 @@ try{
 				$sshClose = str_replace('{PID}', $pid, $sshClose);
 				$log->info("Attempting to kill process $pid with $sshClose...");
 				if($doExec)exec($sshClose);
-				$log->info("Process killed!");
-				$checkedOnly = false;
+				$pid = getPID($sshOpen);
+				if($pid > 0){
+					throw new Exception("Process failed to die PID $pid can be found using $sshOpen as search string");
+				} else {
+					$log->info("Process killed!");
+					$payload['request_open'] = $requestOpen;
+					$payload['comments'] = "Process killed!";
+				}
 			} else {
 				$log->info("No process found searching on $sshOpen so ignoring request to close!");
+				$payload['comments'] = "No process found searching on $sshOpen so ignoring request to close!";
 			}
 		}
 		
-		if($checkedOnly){
+		if($updateServer){
 			$log->info("Updating server with $remoteHostName info...");
 			$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
 			$req->request();
 			$log->info("Updated server");
 		}
-	/*
-		//check for ssh tunnels
-		if($data && !empty($data['ssh-tunnels'])){
-			$log->info("Checking ssh-tunnels...");
-			$tunnels = $data['ssh-tunnels'];
-			if(isset($tunnels[$tunnelEndpoint])){
-				$connect = $tunnels[$tunnelEndpoint];
-				$sshOpen = Config::get('OPEN_SSH_TUNNEL', "ssh -tt -i /home/pi/.ssh/bbaws.pem ec2-user@13.59.14.192 -R 2222:localhost:22");
-				$sshClose = Config::get('CLOSE_SSH_TUNNEL', "kill -9 {PID}");
-				$pid = isProcessRunning($sshOpen);
-
-				$sshClose = str_replace('{PID}', $pid, $sshClose);
-				if($connect){					
-					$log->info("Remote $apiBaseURL requests to open $tunnelEndpoint ...");
-					if($pid > 0){
-						$log->info("Process $pid already running so ignoring connect request!");
-					} else {
-						$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
-						$log->info("Opening tunnel with $openAndRunInBackground");
-						exec($openAndRunInBackground); //run in background
-						$log->info("Process started!");
-					}
-				} else {
-					$log->info("Remote $apiBaseURL requests to disconnect $tunnelEndpoint...");
-					if($pid > 0){
-						$log->info("Killing process $pid with $sshClose...");
-						exec($sshClose);
-						$log->info("Process killed!");
-					} else {
-						$log->info("Process not running so ignoring disconnect!");
-					}
-				}
-			} else {
-				$log->warning("Tunnel host $tunnelEndpoint not found in sys info data");
-			}
-
-		} //end ssh tunnels
-	} */
-	} catch (Exception $e){
+	} catch (Exception $e){ //Exceptions for Remote Host stuff
 		if($log){
 			$log->exception($e->getMessage());
         	$log->info("Remote host update exited because of exception: ".$e->getMessage());

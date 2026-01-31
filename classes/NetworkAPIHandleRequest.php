@@ -167,6 +167,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				if(isset($payload['request_open'])){
 					if($payload['request_open']){
 						$payload['opened_on'] = self::now(false);
+						$payload['closed_on'] = null;
 					} else {
 						$payload['closed_on'] = self::now(false);
 					}
