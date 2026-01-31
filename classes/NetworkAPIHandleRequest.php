@@ -170,9 +170,8 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 					} else {
 						$payload['closed_on'] = self::now(false);
 					}
-				} else {
-					$payload['last_checked'] = self::now(false);
-				}
+				} 
+				$payload['last_updated'] = self::now(false);
 				$payload['wan_ip'] = $_SERVER['REMOTE_ADDR'];
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);
