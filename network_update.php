@@ -92,8 +92,7 @@ try{
 		$serverPort = $remoteHostData['server_port'];
 		$payload = array();
 		$payload['remote_host_name'] = $remoteHostName;
-		$payload['remote_host_lan_ip'] = Network::getLANIP();
-		print_r($payload); die;
+		$payload['lan_ip'] = '192.1.1.1'; //Network::getLANIP();
 		$checkedOnly = true;
 		$pid = getPID($sshOpen);
 
