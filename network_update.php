@@ -90,6 +90,9 @@ try{
 		
 		$requestOpen = $remoteHostData['request_open'];
 		$serverPort = $remoteHostData['server_port'];
+		$payload = array();
+		$payload['remote_host_name'] = $remoteHostName;
+		$checkedOnly = true;
 		$pid = getPID($sshOpen);
 
 		if($requestOpen){
@@ -101,14 +104,13 @@ try{
 				$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
 				$log->info("Open tunnel using: $openAndRunInBackground");
 				if($doExec)exec($openAndRunInBackground);
-				$pid = 10; //getPID($sshOpen);
+				$pid = getPID($sshOpen);
 				if($pid > 0){
 					$log->info("Process $pid started! So updating server @ $apiBaseURL");
-					$payload = array();
-					$payload['remote_host_name'] = $remoteHostName;
 					$payload['request_open'] = $requestOpen;
 					$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
 					$req->request();
+					$checkedOnly = false;
 				} else {
 					throw new Exception("Process failed to start as no PID can be found using $sshOpen as search string");
 				}
@@ -121,12 +123,16 @@ try{
 				$log->info("Attempting to kill process $pid with $sshClose...");
 				if($doExec)exec($sshClose);
 				$log->info("Process killed!");
+				$checkedOnly = false;
 			} else {
 				$log->info("No process found searching on $sshOpen so ignoring request to close!");
 			}
 		}
 		
-
+		if($checkedOnly){
+			$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
+			$req->request();
+		}
 	/*
 		//check for ssh tunnels
 		if($data && !empty($data['ssh-tunnels'])){
