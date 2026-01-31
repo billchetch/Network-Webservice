@@ -26,8 +26,8 @@ Config::set('SMTP_PORT', _SMTP_PORT_);*/
 Config::set('API_ALLOW_REQUESTS', 'GET,PUT,POST,DELETE');
 
 //SSH Tunnels
-Config::set('SSH_TUNNEL_ENDPOINT', 'bbrpi-dev');
-Config::set('OPEN_SSH_TUNNEL', '"ssh -tt -i ~/.ssh/ChetchAWS.Singapore.pem ec2-user@47.129.130.200 -R 2222:localhost:22"');
+Config::set('REMOTE_HOST_NAME', 'bbrpi-dev');
+Config::set('OPEN_SSH_TUNNEL', "ssh -tt -i ~/.ssh/ChetchAWS.Singapore.pem -R :{SERVER_PORT}:localhost:22 ec2-user@47.129.130.200");
 Config::get('CLOSE_SSH_TUNNEL', "kill -9 {PID}");
 
 //establish table names
