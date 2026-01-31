@@ -163,18 +163,20 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 
 			case 'remote-host':
 				if(empty($payload['remote_host_name']))throw new Exception("Cannot update remote host as no remote_host_name provided");
-				if(!isset($payload['request_open']))throw new Exception("Cannot update remote host as no request_open provided");
-				
 				unset($payload['id']);
-				if($payload['request_open']){
-					$payload['opened_on'] = self::now(false);
+				if(isset($payload['request_open'])){
+					if($payload['request_open']){
+						$payload['opened_on'] = self::now(false);
+					} else {
+						$payload['closed_on'] = self::now(false);
+					}
 				} else {
-					$payload['closed_on'] = self::now(false);
+					$payload['last_checked'] = self::now(false);
 				}
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);
 				$data = $host->getRowData();
-				
+
 				break;
 
 			default:
