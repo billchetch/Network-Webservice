@@ -66,12 +66,15 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 			case 'router-status':
 				break;
 
-			case 'network-data':
-				$si = SysInfo::createInstance();
-				$data = $si->getData('network-data');
-				if(!$data){
-					throw new Exception("No network data available");
-				}
+			case 'remote-hosts':
+				$hosts = RemoteHost::createCollection();
+				$hosts = RemoteHost::collection2rows($hosts);
+				$data = $hosts;
+				break;
+
+			case 'remote-host':
+				$host = RemoteHost::createInstance($params);
+				$data = $host->getRowData();
 				break;
 
 			case 'tokens':
