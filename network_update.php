@@ -95,7 +95,7 @@ try{
 		$payload['remote_host_name'] = $remoteHostName;
 		$payload['lan_ip'] = Network::getLANIP();
 		$payload['comments'] = "Running script with doExec = ".($doExec ? 'false' : 'true');
-		$pid = 10; //getPID($sshOpen);
+		$pid = getPID($sshOpen);
 
 		if($requestOpen){
 			$log->info("Remote host request to open reverse tunnel!");
@@ -107,7 +107,7 @@ try{
 				$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
 				$log->info("Open tunnel using: $openAndRunInBackground");
 				if($doExec)exec($openAndRunInBackground);
-				$pid = 10; //getPID($sshOpen);
+				$pid = getPID($sshOpen);
 				if($pid > 0){
 					$log->info("Process $pid started! So updating server @ $apiBaseURL");
 					$payload['request_open'] = $requestOpen;
@@ -133,7 +133,7 @@ try{
 				}
 			} else {
 				$log->info("No process found searching on $sshOpen so ignoring request to close!");
-				$payload['comments'] = "No process found searching on $sshOpen so ignoring request to close!";
+				$payload['comments'] = "No process found so ignoring request to close!";
 			}
 		}
 		
