@@ -92,6 +92,8 @@ try{
 		$serverPort = $remoteHostData['server_port'];
 		$payload = array();
 		$payload['remote_host_name'] = $remoteHostName;
+		$payload['remote_host_lan_ip'] = Network::getLANIP();
+		print_r($payload); die;
 		$checkedOnly = true;
 		$pid = getPID($sshOpen);
 
@@ -130,8 +132,10 @@ try{
 		}
 		
 		if($checkedOnly){
+			$log->info("Updating server with $remoteHostName info...");
 			$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
 			$req->request();
+			$log->info("Updated server");
 		}
 	/*
 		//check for ssh tunnels

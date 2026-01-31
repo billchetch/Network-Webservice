@@ -173,7 +173,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				} else {
 					$payload['last_checked'] = self::now(false);
 				}
-				$payload['remote_host_wan_ip'] = $_REQUEST['REMOTE_HOST'];
+				$payload['wan_ip'] = $_REQUEST['REMOTE_HOST'];
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);
 				$data = $host->getRowData();
