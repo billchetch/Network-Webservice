@@ -171,6 +171,10 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				} else {
 					$payload['closed_on'] = self::now(false);
 				}
+				$host = RemoteHost::createInstance($payload);
+				$host->write(true);
+				$data = $host->getRowData();
+				
 				break;
 
 			default:
