@@ -70,6 +70,7 @@ try{
 	try{
 		//Retreive remote-host data from webservice
 		$doExec = Config::get('REMOTE_HOST_DO_EXEC', false); //For testing etc.... on live set this flag to true for example
+		if(!$doExce)$log->warning("Note doExec = false!");
 		$remoteHostName = Config::get('REMOTE_HOST_NAME', 'bbrpi-dev01');
 		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
 		$log->info("Requesting remote-host info for $remoteHostName from $apiBaseURL...");
