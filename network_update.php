@@ -95,6 +95,8 @@ try{
 			throw new Exception("No ssh close command found for this script!");
 		}
 
+		$log->info("Found ".count($connections)." connections for $remoteHostName:");
+
 		//loop through the connections
 		foreach($connections as $cnn)
 		{
