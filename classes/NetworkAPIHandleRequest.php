@@ -74,7 +74,8 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 
 			case 'remote-host':
 				if(!isset($params['remote_host_name']))throw new Exception("No remote host name set in request");
-				$host = RemoteHost::createInstance($params);
+				// $host = RemoteHost::createInstance($params);
+				$host = RemoteHost::getByHostName($params['remote_host_name']);
 				$data = $host->getRowData();
 				if(!isset($data['id']))throw new Exception("Entry for remote host".$params['remote_host_name']." not found!");
 				break;
@@ -191,7 +192,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				$hostname = $payload['remote_host_name'];
 				$request2open = $payload['request_open'];
 				$host = RemoteHost::getByHostName($hostname);
-				if(!$host)throw new Exception("No remote host found for $hostname");
+				//if(!$host)throw new Exception("No remote host found for $hostname");
 
 				//if($host->get('request_open') == $request2open){
 					//throw new Exception("Request to ".($request2open ? 'open' : 'close')." already PUT");
