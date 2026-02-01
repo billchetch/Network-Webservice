@@ -185,8 +185,12 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				
 				unset($payload['id']);
 				$payload['last_updated'] = self::now(false);
-				$payload['opened_on'] = null;
-				$payload['closed_on'] = null;
+				if($payload['request_open']){ //If requesting to open we reset previous date info
+					$payload['opened_on'] = null;
+					$payload['closed_on'] = null;
+				} else {
+					$payload['closed_on'] = null; //not strictly necessary as it should be null anyways
+				}
 				$payload['wan_ip'] = $_SERVER['REMOTE_ADDR'];
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);
