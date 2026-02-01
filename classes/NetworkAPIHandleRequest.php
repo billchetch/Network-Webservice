@@ -166,6 +166,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 			case 'remote-host':
 				if(empty($payload['remote_host_name']))throw new Exception("Cannot update remote host as no remote_host_name provided");
 				unset($payload['id']);
+
 				if(isset($payload['request_open'])){
 					if($payload['request_open']){
 						$payload['opened_on'] = self::now(false);
@@ -184,8 +185,16 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 			case 'open-remote-host':
 				if(empty($payload['remote_host_name']))throw new Exception("Cannot open or close remote host as no remote_host_name provided");
 				if(!isset($payload['request_open']))throw new Exception("Cannot open or close remote host as no request_open found in payload");
-				
 				unset($payload['id']);
+
+				//Check current status
+				$hostname = $payload['remote_host_name'];
+				$request2open = $payload['request_open'];
+				$host = RemoteHost::getByHostName($hostname);
+				if($host->get('request_open') == $request2open){
+					throw new Exception("Request to ".($request2open ? 'open' : 'close')." already PUT");
+				}
+
 				$payload['last_updated'] = self::now(false);
 				if($payload['request_open']){ //If requesting to open we reset previous date info
 					$payload['opened_on'] = null;

@@ -6,6 +6,7 @@ Config::initialise();
 Config::set('ERROR_REPORTING', E_ALL);
 
 //Database Config
+//$dbinc = dirname(__FILE__).'/../../conf/dbconfig.php';
 include('/var/www/conf/dbconfig.php');
 Config::set('DBHOST', 'mysql:host='._DB_HOST_);
 Config::set('DBNAME', 'network');
