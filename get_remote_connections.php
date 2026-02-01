@@ -30,7 +30,7 @@ try{
 	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-connections', $requestParams);
 	try{
 		$connections = $req->request(); //this will throw if not found
-		$log->info("Found ".count($connection)." connections:");
+		$log->info("Found ".count($connections)." connections:");
 		foreach($connections as $cnn){
 			$connection = $cnn['connection'];
 			if($cnn['request_open'] && !empty($cnn['opened_on']) && empty($cnn['closed_on'])){
