@@ -25,7 +25,8 @@ Config::set('SMTP_PORT', _SMTP_PORT_);*/
 //API Config
 Config::set('API_ALLOW_REQUESTS', 'GET,PUT,POST,DELETE');
 
-//SSH Tunnels
+//REMOTE HOST SSH Tunnels
+Config::set('REMOTE_HOST_DO_EXEC', false); //For testing etc.... on live set this flag to true for example
 Config::set('REMOTE_HOST_NAME', 'bbrpi-dev');
 Config::set('OPEN_SSH_TUNNEL', "ssh -tt -i ~/.ssh/ChetchAWS.Singapore.pem -R :{SERVER_PORT}:localhost:22 ec2-user@47.129.130.200");
 Config::get('CLOSE_SSH_TUNNEL', "kill -9 {PID}");

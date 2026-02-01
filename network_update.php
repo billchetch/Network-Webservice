@@ -61,8 +61,6 @@ function getPID($searchFor){
  * IMPORTANT!: Read the intro to this script above !^!
  */
 $log = null;
-$doExec = false; //for debuggging ... set to true to actually execute system commands!
-$updateServer = true; //flag for updating server or not
 try{
 	$lf = "\n";
 	$log = Logger::getLog('network update', Logger::LOG_TO_SCREEN);
@@ -71,6 +69,7 @@ try{
 	//Remote Host stuff
 	try{
 		//Retreive remote-host data from webservice
+		$doExec = Config::get('REMOTE_HOST_DO_EXEC', false); //For testing etc.... on live set this flag to true for example
 		$remoteHostName = Config::get('REMOTE_HOST_NAME', 'bbrpi-dev01');
 		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
 		$log->info("Requesting remote-host info for $remoteHostName from $apiBaseURL...");
@@ -149,12 +148,11 @@ try{
 			}
 		}
 		
-		if($updateServer){
-			$log->info("Updating server with $remoteHostName info...");
-			$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
-			$req->request();
-			$log->info("Updated server");
-		}
+		//Now update server
+		$log->info("Updating server with $remoteHostName info...");
+		$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-host', $payload);
+		$req->request();
+		$log->info("Updated server");
 	} catch (Exception $e){ //Exceptions for Remote Host stuff
 		if($log){
 			$log->exception($e->getMessage());
