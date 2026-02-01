@@ -31,7 +31,7 @@ try{
 	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
 	try{
 		$req->request(); //this will thor
-		$log->logInfo("$remoteHostName found on server!");
+		$log->info("$remoteHostName found on server!");
 	} catch (Exception $e){
 		$log->warning("$remoteHostName NOT found on server!");
 		throw $e;
