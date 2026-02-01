@@ -177,7 +177,18 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);
 				$data = $host->getRowData();
+				break;
 
+			case 'open-remote-host':
+				if(empty($payload['remote_host_name']))throw new Exception("Cannot open or close remote host as no remote_host_name provided");
+				if(!isset($payload['request_open']))throw new Exception("Cannot open or close remote host as no request_open found in payload");
+				
+				unset($payload['id']);
+				$payload['last_updated'] = self::now(false);
+				$payload['wan_ip'] = $_SERVER['REMOTE_ADDR'];
+				$host = RemoteHost::createInstance($payload);
+				$host->write(true);
+				$data = $host->getRowData();
 				break;
 
 			default:
