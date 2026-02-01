@@ -190,7 +190,7 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				//Check current status
 				$hostname = $payload['remote_host_name'];
 				$request2open = $payload['request_open'];
-				//$host = RemoteHost::getByHostName($hostname);
+				$host = RemoteHost::getByHostName($hostname);
 				/*if($host->get('request_open') == $request2open){
 					throw new Exception("Request to ".($request2open ? 'open' : 'close')." already PUT");
 				}*/
