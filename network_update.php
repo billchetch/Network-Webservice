@@ -98,73 +98,80 @@ try{
 		//loop through the connections
 		foreach($connections as $cnn)
 		{
-			//use some connection data
-			$requestOpen = $cnn['request_open'];
-			$connectionName = $cnn['connection'];
-			$serverPort = $cnn['server_port'];
-			$remotePort = $cnn['remote_port'];
-			$sshOpen = str_replace(array('{SERVER_PORT}','{REMOTE_PORT}'), array($serverPort, $remotePort), $sshOpenTemplate);
-			
-			//set payload for server update later
-			$payload = array();
-			$payload['remote_host_name'] = $remoteHostName;
-			$payload['connection'] = $connectionName;
-			$payload['lan_ip'] = Network::getLANIP();
-			$payload['comments'] = "Running script for connection $connectionName with doExec = ".($doExec ? 'false' : 'true');
+			try{
+				//use some connection data
+				$requestOpen = $cnn['request_open'];
+				$connectionName = $cnn['connection'];
+				$serverPort = $cnn['server_port'];
+				$remotePort = $cnn['remote_port'];
+				$sshOpen = str_replace(array('{SERVER_PORT}','{REMOTE_PORT}'), array($serverPort, $remotePort), $sshOpenTemplate);
+				
+				//set payload for server update later
+				$payload = array();
+				$payload['remote_host_name'] = $remoteHostName;
+				$payload['connection'] = $connectionName;
+				$payload['lan_ip'] = Network::getLANIP();
+				$payload['comments'] = "Running script for connection $connectionName with doExec = ".($doExec ? 'false' : 'true');
 
-			//See if we have a ssh process running
-			$pid = getPID($sshOpen);
+				//See if we have a ssh process running
+				$pid = getPID($sshOpen);
 
-			//Now process the open/close request
-			if($requestOpen){
-				$log->info("Remote connection request to open $connectionName reverse tunnel !");
-				if($pid > 0){
-					$log->info("Process $pid already running so ignoring request to open!");
-					$payload['comments'] = "Process $pid already running so ignoring request to open!";
-				} else {
-					$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
-					$log->info("Open tunnel using: $openAndRunInBackground");
-					if($doExec)exec($openAndRunInBackground);
-					$pid = getPID($sshOpen);
+				//Now process the open/close request
+				if($requestOpen){
+					$log->info("Remote connection request to open $connectionName reverse tunnel !");
 					if($pid > 0){
-						$log->info("Process $pid started! So updating server @ $apiBaseURL");
-						$payload['request_open'] = $requestOpen;
-						$payload['comments'] = "Process $pid started for connection $connectionName!";
+						$log->info("Process $pid already running so ignoring request to open!");
+						$payload['comments'] = "Process $pid already running so ignoring request to open!";
 					} else {
-						throw new Exception("Process failed to start as no PID can be found using $sshOpen as search string");
+						$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
+						$log->info("Open tunnel using: $openAndRunInBackground");
+						if($doExec)exec($openAndRunInBackground);
+						$pid = getPID($sshOpen);
+						if($pid > 0){
+							$log->info("Process $pid started! So updating server @ $apiBaseURL");
+							$payload['request_open'] = $requestOpen;
+							$payload['comments'] = "Process $pid started for connection $connectionName!";
+						} else {
+							throw new Exception("Process failed to start as no PID can be found using $sshOpen as search string");
+						}
+					}
+				} else {
+					$log->info("Remote $connectionName connection set to close reverse tunnel");
+					if($pid > 0){
+						$log->info("Found process $pid matching $sshOpen");
+						$sshClose = str_replace('{PID}', $pid, $sshCloseTemplate);
+						$log->info("Attempting to kill process $pid with $sshClose...");
+						if($doExec)exec($sshClose);
+						$pid = getPID($sshOpen);
+						if($pid > 0){
+							throw new Exception("Process failed to die PID $pid can be found using $sshOpen as search string");
+						} else {
+							$log->info("Process killed!");
+							$payload['request_open'] = $requestOpen;
+							$payload['comments'] = "Process for connectoin $connectionName killed!";
+						}
+					} else {
+						$log->info("No process found searching on $sshOpen so ignoring request to close!");
+						$payload['comments'] = "No process found for connection $connectionName so ignoring request to close!";
 					}
 				}
-			} else {
-				$log->info("Remote $connectionName connection set to close reverse tunnel");
-				if($pid > 0){
-					$log->info("Found process $pid matching $sshOpen");
-					$sshClose = str_replace('{PID}', $pid, $sshCloseTemplate);
-					$log->info("Attempting to kill process $pid with $sshClose...");
-					if($doExec)exec($sshClose);
-					$pid = getPID($sshOpen);
-					if($pid > 0){
-						throw new Exception("Process failed to die PID $pid can be found using $sshOpen as search string");
-					} else {
-						$log->info("Process killed!");
-						$payload['request_open'] = $requestOpen;
-						$payload['comments'] = "Process for connectoin $connectionName killed!";
-					}
-				} else {
-					$log->info("No process found searching on $sshOpen so ignoring request to close!");
-					$payload['comments'] = "No process found for connection $connectionName so ignoring request to close!";
+				
+				//Now update server
+				$log->info("Updating server with $remoteHostName $connectionName info...");
+				$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-connection', $payload);
+				$req->request();
+				$log->info("Updated server");
+			} catch (Exception $e){
+				if($log){
+					$log->exception($e->getMessage());
+					$log->info("Remote connection exited because of exception: ".$e->getMessage());
 				}
 			}
-			
-			//Now update server
-			$log->info("Updating server with $remoteHostName $connectionName info...");
-			$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-connection', $payload);
-			$req->request();
-			$log->info("Updated server");
 		} //end looping through connections
 	} catch (Exception $e){ //Exceptions for Remote Host stuff
 		if($log){
 			$log->exception($e->getMessage());
-        	$log->info("Remote host update exited because of exception: ".$e->getMessage());
+        	$log->info("Remote connections update exited because of exception: ".$e->getMessage());
 		}
 	}
 
