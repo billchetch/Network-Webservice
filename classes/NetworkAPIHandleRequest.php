@@ -185,6 +185,8 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				
 				unset($payload['id']);
 				$payload['last_updated'] = self::now(false);
+				$payload['opened_on'] = null;
+				$payload['closed_on'] = null;
 				$payload['wan_ip'] = $_SERVER['REMOTE_ADDR'];
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);

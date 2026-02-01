@@ -28,7 +28,14 @@ try{
 		$log->info("Requesting ".($open ? 'open' : 'close')." $remoteHostName from $apiBaseURL...");
 		
 		$payload = array();
-		$payload['request_open'] = $open ? 1 : 0;
+		$payload['remote_host_name'] = $remoteHostName;
+		if($open){
+			$payload['request_open'] = 1;
+			$payload['comments'] = "Requesting opening $remoteHostName";
+		} else {
+			$payload['request_open'] = 0;
+			$payload['comments'] = "Requesting closing $remoteHostName";
+		}
 		$req = APIMakeRequest::createPutRequest($apiBaseURL, 'open-remote-host', $payload);
 		$req->request();
 		$log->info("Updated server");
