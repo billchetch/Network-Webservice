@@ -17,7 +17,7 @@ use chetch\api\APIMakeRequest as APIMakeRequest;
 $log = null;
 try{
 	$lf = "\n";
-	$log = Logger::getLog('get remote host', Logger::LOG_TO_SCREEN);
+	$log = Logger::getLog('get remote connections', Logger::LOG_TO_SCREEN);
     $log->start();
 
 	if($argc < 2)throw new Exception("Please supply a remote host name an argument to this script");
@@ -25,19 +25,24 @@ try{
 	
 	//Retreive remote-host data from webservice
 	$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
-	$log->info("Requesting remote-host $remoteHostName from $apiBaseURL...");
+	$log->info("Requesting connections for $remoteHostName from $apiBaseURL...");
 	$requestParams = array('remote_host_name' => $remoteHostName);
-	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
+	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-connections', $requestParams);
 	try{
-		$remoteHostData = $req->request(); //this will throw if not found
-		if($remoteHostData['request_open'] && !empty($remoteHostData['opened_on']) && empty($remoteHostData['closed_on'])){
-			$log->info("$remoteHostName is open, opened on ".$remoteHostData['opened_on']);
-		} else if($remoteHostData['request_open'] && empty($remoteHostData['opened_on'])){
-			$log->info("$remoteHostName waiting to open, updated on ".$remoteHostData['last_updated']);
-		} else if(!empty($remoteHostData['opened_on']) && !empty($remoteHostData['closed_on'])){
-			$log->info("$remoteHostName is closed");
-		} else if(!$remoteHostData['request_open'] && empty($remoteHostData['closed_on'])){
-			$log->info("$remoteHostName waiting to close");
+		$connections = $req->request(); //this will throw if not found
+
+		foreach($connections as $cnn){
+			$connection = $cnn['connection'];
+			$log->info("------- $connection connection -------");
+			if($cnn['request_open'] && !empty($cnn['opened_on']) && empty($cnn['closed_on'])){
+				$log->info("$connection is OPEN, opened on ".$cnn['opened_on']);
+			} else if($cnn['request_open'] && empty($cnn['opened_on'])){
+				$log->info("$connection waiting to open, updated on ".$cnn['last_updated']);
+			} else if(!empty($cnn['opened_on']) && !empty($cnn['closed_on'])){
+				$log->info("$connection is CLOSED");
+			} else if(!$cnn['request_open'] && empty($cnn['closed_on'])){
+				$log->info("$connection waiting to close");
+			}
 		}
 	} catch (Exception $e){
 		$log->warning("$remoteHostName NOT found on server!");
