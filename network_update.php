@@ -83,27 +83,33 @@ try{
 		$sshOpen = Config::get('OPEN_SSH_TUNNEL', null);
 		if(!$sshOpen){
 			throw new Exception("No ssh open command found for this script!");
-		}
+		}		
 		$sshClose = Config::get('CLOSE_SSH_TUNNEL', "kill -9 {PID}");
 		if(!$sshClose){
 			throw new Exception("No ssh close command found for this script!");
 		}
 		
+		//use some remote host data
 		$requestOpen = $remoteHostData['request_open'];
 		$serverPort = $remoteHostData['server_port'];
+		$sshOpen = str_replace('{SERVER_PORT}', $serverPort, $sshOpen);
+		
+		//set payload for server update later
 		$payload = array();
 		$payload['remote_host_name'] = $remoteHostName;
 		$payload['lan_ip'] = Network::getLANIP();
 		$payload['comments'] = "Running script with doExec = ".($doExec ? 'false' : 'true');
+
+		//See if we have a ssh process running
 		$pid = getPID($sshOpen);
 
+		//Now process the open/close request
 		if($requestOpen){
 			$log->info("Remote host request to open reverse tunnel!");
 			if($pid > 0){
 				$log->info("Process $pid already running so ignoring request to open!");
 				$payload['comments'] = "Process $pid already running so ignoring request to open!";
 			} else {
-				$sshOpen = str_replace('{SERVER_PORT}', $serverPort, $sshOpen);
 				$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
 				$log->info("Open tunnel using: $openAndRunInBackground");
 				if($doExec)exec($openAndRunInBackground);
