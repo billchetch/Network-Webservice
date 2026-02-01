@@ -76,10 +76,14 @@ try{
 		$log->info("Requesting remote-host info for $remoteHostName from $apiBaseURL...");
 		$requestParams = array('remote_host_name' => $remoteHostName);
 		$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
-		$remoteHostData = $req->request();
-		
-
-		$log->info("Successfully obtained data for remote-host $remoteHostName");
+		$remoteHostData = null;
+		try{
+			$remoteHostData = $req->request();
+			$log->info("Successfully obtained data for remote-host $remoteHostName");
+		} catch (Exception $e){
+			$log->warning("$remoteHostName NOT found on server!");
+			throw $e;
+		}
 
 		//Generate the ssh reverse tunnel command
 		$sshOpen = Config::get('OPEN_SSH_TUNNEL', null);

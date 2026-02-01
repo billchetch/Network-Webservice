@@ -29,9 +29,12 @@ try{
 	$log->info("Verifying server has remote-host $remoteHostName from $apiBaseURL...");
 	$requestParams = array('remote_host_name' => $remoteHostName);
 	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
-	$remoteHostData = $req->request();
-	if(!$remoteHostData || !isset($remoteHostData['remote_host_name'])){
-		throw new Exception("Cannot find $remoteHostName @ $apiBaseURL");
+	try{
+		$req->request(); //this will thor
+		$log->logInfo("$remoteHostName found on server!");
+	} catch (Exception $e){
+		$log->warning("$remoteHostName NOT found on server!");
+		throw $e;
 	}
 	
 	//Now update
@@ -54,7 +57,7 @@ try{
 } catch (Exception $e){
 	if($log){
 		$log->exception($e->getMessage());
-        	$log->info("Network update exited because of exception: ".$e->getMessage());
+        	$log->info("open remote host exited because of exception: ".$e->getMessage());
 	} else {
 		echo "EXCEPTION: ".$e->getMessage();
 	}
