@@ -80,6 +80,26 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				if(!isset($data['id']))throw new Exception("Entry for remote host".$params['remote_host_name']." not found!");
 				break;
 
+			case 'remote-connections':
+				if(isset($params['remote_host_name'])){
+					$filter = "remote_host_name=':remote_host_name'";
+					$cnns = RemoteConnection::createCollection($params, $filter);
+				} else {
+					$cnns = RemoteConnection::createCollection();
+				}
+				$cnns = RemoteConnection::collection2rows($cnns);
+				$data = $cnns;
+				break;
+
+			case 'remote-connection':
+				if(!isset($params['remote_host_name']))throw new Exception("No remote host name set in request");
+				if(!isset($params['connection']))throw new Exception("No connection type set in request");
+				$cnn = RemoteConnection::createInstance($params);
+				//$host = RemoteHost::getByHostName($params['remote_host_name']);
+				$data = $cnn->getRowData();
+				if(!isset($data['id']))throw new Exception("Entry for remote connection".$params['remote_host_name'].' '.$params['connection']." not found!");
+				break;	
+
 			case 'tokens':
 				if(!isset($params['service_id']))throw new Exception("No service id passed in query");
 				
@@ -210,6 +230,57 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				$host = RemoteHost::createInstance($payload);
 				$host->write(true);
 				$data = $host->getRowData();
+				break;
+
+			case 'remote-connection':
+				if(empty($payload['remote_host_name']))throw new Exception("Cannot update remote connection as no remote_host_name provided");
+				if(empty($payload['connection']))throw new Exception("Cannot update remote connection as no connection type provided");
+				unset($payload['id']);
+
+				if(isset($payload['request_open'])){
+					if($payload['request_open']){
+						$payload['opened_on'] = self::now(false);
+						$payload['closed_on'] = null;
+					} else {
+						$payload['closed_on'] = self::now(false);
+					}
+				} 
+				$payload['last_updated'] = self::now(false);
+				$payload['wan_ip'] = $_SERVER['REMOTE_ADDR'];
+				$cnn = RemoteConnection::createInstance($payload);
+				$cnn->write(true);
+				$data = $cnn->getRowData();
+				break;
+
+			case 'open-remote-connection':
+				if(empty($payload['remote_host_name']))throw new Exception("Cannot open or close remote host as no remote_host_name provided");
+				if(empty($payload['connection']))throw new Exception("Cannot update remote connection as no connection type provided");
+				if(!isset($payload['request_open']))throw new Exception("Cannot open or close remote host as no request_open found in payload");
+				unset($payload['id']);
+
+				//Check current status
+				$hostname = $payload['remote_host_name'];
+				$connection = $payload['connection'];
+				$request2open = $payload['request_open'];
+				$cnn = RemoteConnection::getConnection($hostname, $connection);
+				if(!$cnn->getID()){
+					throw new Exception("No remote connection found with name $hostname for connection type $connection");
+				}
+				if($cnn->get('request_open') == $request2open){
+					throw new Exception("Request to ".($request2open ? 'open' : 'close')." already PUT");
+				}
+
+				$payload['last_updated'] = self::now(false);
+				if($payload['request_open']){ //If requesting to open we reset previous date info
+					$payload['opened_on'] = null;
+					$payload['closed_on'] = null;
+				} else {
+					$payload['closed_on'] = null; //not strictly necessary as it should be null anyways
+				}
+				$payload['wan_ip'] = $_SERVER['REMOTE_ADDR'];
+				$cnn = RemoteConnection::createInstance($payload);
+				$cnn->write(true);
+				$data = $cnn->getRowData();
 				break;
 
 			default:
