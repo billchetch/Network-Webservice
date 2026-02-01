@@ -3,9 +3,9 @@
  * Script to be run regularly by a cron job.  Performing various network related funcitons
  * 
  * 1. Opening and closing SSH tunnels to allow connection from a client via a proxy to the machine that is running this <script class=""></script>
- * The concept here is to execute on this machine:
+ * The concept here is to execute on this machine (the 'remote machine'):
  * 
- * 		ssh -R :<server-port>:localhost:<local-port> <server-user>:<server address> 
+ * 		ssh -R :<server-port>:localhost:<remote-port> <server-user>:<server address> 
  * 
  * which will create a 'reverse' tunnel from the server to this machine that can be accessed as follows from the server:
  * 
@@ -19,8 +19,8 @@
  * Note the -t switch to not bring up a terminal when connecting to the server and therefore allowing the terminal to be used directly for the 
  * connection to this machine.
  * 
- * The specific details and whether or not to even open the reverse tunnel is managed via the 'network web service' on the server and it's this script that
- * connects to this webservice to then open the tunnel or close it.
+ * The specific details and whether or not to even open the reverse tunnel is managed via the 'network web service' on the server. This script
+ * connects to that webservice to  open a tunnel or close it.
  */
 require_once('_include.php');
 
