@@ -10,7 +10,7 @@ class RemoteHost extends \chetch\db\DBObject{
 		self::setConfig('SELECT_ROW_FILTER', "remote_host_name=:remote_host_name");
 	}
 	
-	public static function geByHostName($hostname){
+	public static function getByHostName($hostname){
 		$params = array();
 		$params['remote_host_name'] = $hostname;
 		return self::createInstance($params);

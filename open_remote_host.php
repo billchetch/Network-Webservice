@@ -24,7 +24,6 @@ try{
 	$remoteHostName = $argv[1];
 	$open = $argc >= 3 && boolval($argv[2]);
 	
-	
 	//Retreive remote-host data from webservice
 	$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
 	$log->info("Verifying server has remote-host $remoteHostName from $apiBaseURL...");
