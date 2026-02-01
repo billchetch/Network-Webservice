@@ -36,11 +36,11 @@ try{
 			if($cnn['request_open'] && !empty($cnn['opened_on']) && empty($cnn['closed_on'])){
 				$log->info("----- $connection is OPEN, opened on ".$cnn['opened_on']);
 			} else if($cnn['request_open'] && empty($cnn['opened_on'])){
-				$log->info("----- $connection waiting to open, updated on ".$cnn['last_updated']);
+				$log->info("----- $connection WAITING TO OPEN, updated on ".$cnn['last_updated']);
 			} else if(!empty($cnn['opened_on']) && !empty($cnn['closed_on'])){
 				$log->info("----- $connection is CLOSED");
 			} else if(!$cnn['request_open'] && empty($cnn['closed_on'])){
-				$log->info("----- $connection waiting to close");
+				$log->info("----- $connection WAITING TO CLOSE");
 			}
 		}
 	} catch (Exception $e){
