@@ -192,10 +192,10 @@ class NetworkAPIHandleRequest extends chetch\api\APIHandleRequest{
 				$request2open = $payload['request_open'];
 				$host = RemoteHost::getByHostName($hostname);
 				if(!$host)throw new Exception("No remote host found for $hostname");
-				
-				if($host->get('request_open') == $request2open){
+
+				//if($host->get('request_open') == $request2open){
 					//throw new Exception("Request to ".($request2open ? 'open' : 'close')." already PUT");
-				}
+				//}
 
 				$payload['last_updated'] = self::now(false);
 				if($payload['request_open']){ //If requesting to open we reset previous date info
