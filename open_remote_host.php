@@ -19,11 +19,12 @@ try{
 	$log = Logger::getLog('open remote host', Logger::LOG_TO_SCREEN);
     $log->start();
 
-	$open = $argc >= 2 && boolval($argv[1]);
+	if($argc < 2)throw new Exception("Please supply a remote host name an argument to this script");
+	$remoteHostName = $argv[1];
+	$open = $argc >= 3 && boolval($argv[2]);
 	//Remote Host stuff
 	try{
 		//Retreive remote-host data from webservice
-		$remoteHostName = Config::get('REMOTE_HOST_NAME', 'bbrpi-dev01');
 		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
 		$log->info("Requesting ".($open ? 'open' : 'close')." $remoteHostName from $apiBaseURL...");
 		
