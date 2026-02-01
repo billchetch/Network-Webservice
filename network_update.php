@@ -77,6 +77,8 @@ try{
 		$requestParams = array('remote_host_name' => $remoteHostName);
 		$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
 		$remoteHostData = $req->request();
+		
+
 		$log->info("Successfully obtained data for remote-host $remoteHostName");
 
 		//Generate the ssh reverse tunnel command

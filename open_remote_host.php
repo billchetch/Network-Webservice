@@ -22,30 +22,32 @@ try{
 	if($argc < 2)throw new Exception("Please supply a remote host name an argument to this script");
 	$remoteHostName = $argv[1];
 	$open = $argc >= 3 && boolval($argv[2]);
-	//Remote Host stuff
-	try{
-		//Retreive remote-host data from webservice
-		$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
-		$log->info("Requesting ".($open ? 'open' : 'close')." $remoteHostName from $apiBaseURL...");
-		
-		$payload = array();
-		$payload['remote_host_name'] = $remoteHostName;
-		if($open){
-			$payload['request_open'] = 1;
-			$payload['comments'] = "Requesting opening $remoteHostName";
-		} else {
-			$payload['request_open'] = 0;
-			$payload['comments'] = "Requesting closing $remoteHostName";
-		}
-		$req = APIMakeRequest::createPutRequest($apiBaseURL, 'open-remote-host', $payload);
-		$req->request();
-		$log->info("Updated server");
-	} catch (Exception $e){ //Exceptions for Remote Host stuff
-		if($log){
-			$log->exception($e->getMessage());
-        	$log->info("Remote host update exited because of exception: ".$e->getMessage());
-		}
+	
+	
+	//Retreive remote-host data from webservice
+	$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
+	$log->info("Verifying server has remote-host $remoteHostName from $apiBaseURL...");
+	$requestParams = array('remote_host_name' => $remoteHostName);
+	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
+	$remoteHostData = $req->request();
+	if(!$remoteHostData || !isset($remoteHostData['remote_host_name'])){
+		throw new Exception("Cannot find $remoteHostName @ $apiBaseURL");
 	}
+	
+	//Now update
+	$log->info("Requesting ".($open ? 'open' : 'close')." $remoteHostName from $apiBaseURL...");
+	$payload = array();
+	$payload['remote_host_name'] = $remoteHostName;
+	if($open){
+		$payload['request_open'] = 1;
+		$payload['comments'] = "Requesting opening $remoteHostName";
+	} else {
+		$payload['request_open'] = 0;
+		$payload['comments'] = "Requesting closing $remoteHostName";
+	}
+	$req = APIMakeRequest::createPutRequest($apiBaseURL, 'open-remote-host', $payload);
+	$req->request();
+	$log->info("Updated server");
 
 	$log->finish();
 
