@@ -108,6 +108,8 @@ try{
 				$remotePort = $cnn['remote_port'];
 				$sshOpen = str_replace(array('{SERVER_PORT}','{REMOTE_PORT}'), array($serverPort, $remotePort), $sshOpenTemplate);
 				$updateServer = false;
+
+				$log->info("------ Handling remote connection: $connectionName $serverPort $remotePort");
 				
 				//set payload for server update later
 				$payload = array();
