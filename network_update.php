@@ -107,6 +107,7 @@ try{
 				$serverPort = $cnn['server_port'];
 				$remotePort = $cnn['remote_port'];
 				$sshOpen = str_replace(array('{SERVER_PORT}','{REMOTE_PORT}'), array($serverPort, $remotePort), $sshOpenTemplate);
+				$updateServer = false;
 				
 				//set payload for server update later
 				$payload = array();
@@ -123,7 +124,6 @@ try{
 					$log->info("Remote connection request to open $connectionName reverse tunnel !");
 					if($pid > 0){
 						$log->info("Process $pid already running so ignoring request to open!");
-						$payload['comments'] = "Process $pid already running so ignoring request to open!";
 					} else {
 						$openAndRunInBackground = $sshOpen.' >/dev/null 2>&1  &';
 						$log->info("Open tunnel using: $openAndRunInBackground");
@@ -133,6 +133,7 @@ try{
 							$log->info("Process $pid started! So updating server @ $apiBaseURL");
 							$payload['request_open'] = $requestOpen;
 							$payload['comments'] = "Process $pid started for connection $connectionName!";
+							$updateServer = true;
 						} else {
 							throw new Exception("Process failed to start as no PID can be found using $sshOpen as search string");
 						}
@@ -150,19 +151,23 @@ try{
 						} else {
 							$log->info("Process killed!");
 							$payload['request_open'] = $requestOpen;
-							$payload['comments'] = "Process for connectoin $connectionName killed!";
+							$payload['comments'] = "Process $pid for connectoin $connectionName killed!";
+							$updateServer = true;
 						}
 					} else {
 						$log->info("No process found searching on $sshOpen so ignoring request to close!");
-						$payload['comments'] = "No process found for connection $connectionName so ignoring request to close!";
 					}
 				}
 				
 				//Now update server
-				$log->info("Updating server with $remoteHostName $connectionName info...");
-				$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-connection', $payload);
-				$req->request();
-				$log->info("Updated server");
+				if($updateServer){
+					$log->info("Updating server with $remoteHostName $connectionName info...");
+					$req = APIMakeRequest::createPutRequest($apiBaseURL, 'remote-connection', $payload);
+					$req->request();
+					$log->info("Updated server");
+				} else {
+					$log->info("No changes required for $remoteHostName $connectionName");
+				}
 			} catch (Exception $e){
 				if($log){
 					$log->exception($e->getMessage());
