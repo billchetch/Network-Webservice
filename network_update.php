@@ -153,7 +153,7 @@ try{
 						} else {
 							$log->info("Process killed!");
 							$payload['request_open'] = $requestOpen;
-							$payload['comments'] = "Process $pid for connectoin $connectionName killed!";
+							$payload['comments'] = "Process for connectoin $connectionName killed!";
 							$updateServer = true;
 						}
 					} else {
