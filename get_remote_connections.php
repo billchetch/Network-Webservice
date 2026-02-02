@@ -40,7 +40,11 @@ try{
 			} else if(!empty($cnn['opened_on']) && !empty($cnn['closed_on'])){
 				$log->info("----- $connection is CLOSED");
 			} else if(!$cnn['request_open'] && empty($cnn['closed_on'])){
-				$log->info("----- $connection WAITING TO CLOSE");
+				if(empty($cnn['last_updated'])){
+					$log->info("----- $connection not yet used!");
+				} else {
+					$log->info("----- $connection WAITING TO CLOSE");
+				}
 			}
 		}
 	} catch (Exception $e){
