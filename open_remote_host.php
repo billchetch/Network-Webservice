@@ -20,35 +20,51 @@ try{
 	$log = Logger::getLog('open remote host', Logger::LOG_TO_SCREEN);
     $log->start();
 
-	if($argc < 2)throw new Exception("Please supply a remote host name an argument to this script");
+	if($argc < 3)throw new Exception("Please supply a remote host name an argument to this script");
 	$remoteHostName = $argv[1];
-	$open = $argc >= 3 && boolval($argv[2]);
+	$connection = $argv[2];
+	$open = $argc >= 3 && boolval($argv[3]);
 	
 	//Retreive remote-host data from webservice
 	$apiBaseURL = Config::get('REMOTE_API_BASE_URL', "http://network.bulan-baru.com:8001/api/");
-	$log->info("Verifying server has remote-host $remoteHostName from $apiBaseURL...");
-	$requestParams = array('remote_host_name' => $remoteHostName);
-	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-host', $requestParams);
+	$log->info("Verifying server has $remoteHostName $connection from $apiBaseURL...");
+	$requestParams = array('remote_host_name' => $remoteHostName, 'connection'=>$connection);
+	$req = APIMakeRequest::createGetRequest($apiBaseURL, 'remote-connection', $requestParams);
+	$cnn = null;
 	try{
-		$req->request(); //this will thor
-		$log->info("$remoteHostName found on server!");
+		$cnn = $req->request(); //this will thor
+		$log->info("$remoteHostName $connection found on server!");
 	} catch (Exception $e){
-		$log->warning("$remoteHostName NOT found on server!");
+		$log->warning("$remoteHostName $connection NOT found on server!");
 		throw $e;
+	}
+
+	//Check if an update is required
+	if($open){
+		$alreadyOpen = $cnn['request_open'];
+		if($alreadyOpen){
+			throw new Exception("$connection has already been requestd to open!");
+		}
+	} else {
+		$alreadyClosed = !$cnn['request_open'];
+		if($alreadyClosed){
+			throw new Exception("$connection has already been requestd to close!");
+		}
 	}
 	
 	//Now update
-	$log->info("Requesting ".($open ? 'open' : 'close')." $remoteHostName from $apiBaseURL...");
+	$log->info("Requesting ".($open ? 'open' : 'close')." $remoteHostName $connection from $apiBaseURL...");
 	$payload = array();
 	$payload['remote_host_name'] = $remoteHostName;
+	$payload['connection'] = $connection;
 	if($open){
 		$payload['request_open'] = 1;
-		$payload['comments'] = "Requesting opening $remoteHostName";
+		$payload['comments'] = "Requesting opening $connection";
 	} else {
 		$payload['request_open'] = 0;
-		$payload['comments'] = "Requesting closing $remoteHostName";
+		$payload['comments'] = "Requesting closing $connection";
 	}
-	$req = APIMakeRequest::createPutRequest($apiBaseURL, 'open-remote-host', $payload);
+	$req = APIMakeRequest::createPutRequest($apiBaseURL, 'open-remote-connection', $payload);
 	$req->request();
 	$log->info("Updated server");
 
@@ -57,7 +73,8 @@ try{
 } catch (Exception $e){
 	if($log){
 		$log->exception($e->getMessage());
-        	$log->info("open remote host exited because of exception: ".$e->getMessage());
+        $log->info("open remote host exited because of exception: ".$e->getMessage());
+		$log->finish();
 	} else {
 		echo "EXCEPTION: ".$e->getMessage();
 	}

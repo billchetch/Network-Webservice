@@ -182,12 +182,14 @@ try{
 		}
 	}
 
+	//end of all
 	$log->finish();
 
 } catch (Exception $e){
 	if($log){
 		$log->exception($e->getMessage());
-        	$log->info("Network update exited because of exception: ".$e->getMessage());
+        $log->info("Network update exited because of exception: ".$e->getMessage());
+		$log->getPIDfinish();
 	} else {
 		echo "EXCEPTION: ".$e->getMessage();
 	}

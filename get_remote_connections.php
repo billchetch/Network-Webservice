@@ -57,7 +57,8 @@ try{
 } catch (Exception $e){
 	if($log){
 		$log->exception($e->getMessage());
-        	$log->info("get remote host exited because of exception: ".$e->getMessage());
+        $log->info("get remote host exited because of exception: ".$e->getMessage());
+		$log->finish();
 	} else {
 		echo "EXCEPTION: ".$e->getMessage();
 	}
